@@ -17,6 +17,28 @@ Before building and running the app, ensure you have the following installed:
 
 ---
 
+## App Structure
+
+The app follows the MVVM (Model-View-ViewModel) architecture:
+
+### Model: 
+
+- Handles data-related operations such as fetching exchange rates from the API.
+- Includes: CurrencyRepository ( fetch exchange rate ), CurrencyApi and ApiClient ( defines the API interface and Retrofit instance for network operations)
+
+### ViewModel:
+- Acts as a bridge between the Model and the View.
+- Contains business logic and prepares data for the UI.
+- Includes: CurrencyViewModel ( currency conversion logic and updates LiveData for the converter ), 
+TravelEstimatorViewModel ( adding, deleting, and currency conversion for total trip cost )
+
+### View 
+- The UI that observes LiveData from View Model and display it
+- Includes:
+  - MainActivity: UI for selecting base/target currencies and displaying converted amounts.
+  - TravelEstimatorListActivity: Displays a list of travel estimators and allows adding/deleting estimators.
+  - TravelEstimatorAdapter: Displays estimator details in a RecyclerView.
+    
 ## Steps to Build and Run
 
 ### 1. Download the .zip file 
