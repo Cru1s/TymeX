@@ -1,1 +1,0 @@
-TymeX Challenge
