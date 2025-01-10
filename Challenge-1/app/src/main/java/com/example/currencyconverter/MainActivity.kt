@@ -19,11 +19,12 @@ import com.example.currencyconverter.databinding.ActivityMainBinding
 import com.example.currencyconverter.viewmodel.CurrencyViewModel
 import com.example.currencyconverter.viewmodel.CurrencyViewModelFactory
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: CurrencyViewModel by viewModels{
+
+    // ViewModel for handling currency conversion logic
+    private val viewModel: CurrencyViewModel by viewModels {
         CurrencyViewModelFactory(CurrencyRepository(ApiClient.api))
     }
 
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Populate the currency dropdowns with predefined lists
         val currencies = resources.getStringArray(R.array.currencies)
         val currencies2 = resources.getStringArray(R.array.currencies2)
 
@@ -44,39 +46,44 @@ class MainActivity : AppCompatActivity() {
         binding.spBase.adapter = adapterBase
         binding.spTarget.adapter = adapterTarget
 
-        viewModel.conversionResult.observe(this){ result ->
+        setupObservers() // Observe LiveData for UI updates
+        setupListeners() // Handle user interactions
+    }
+
+    private fun setupObservers() {
+        // Observe LiveData for conversion results and update the target field
+        viewModel.conversionResult.observe(this) { result ->
             binding.tietTarget.setText(result)
         }
 
-        viewModel.errorMessage.observe(this){ error ->
+        // Observe LiveData for errors and show them as popups
+        viewModel.errorMessage.observe(this) { error ->
             showErrorPopup(error)
         }
+    }
 
-        binding.tietBase.setOnFocusChangeListener{ _, hasFocus ->
+    private fun setupListeners() {
+        // Trigger currency conversion when the base amount loses focus
+        binding.tietBase.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 handleConversion()
             }
         }
 
-        binding.btnSwap.setOnClickListener(){
+        // Swap the selected currencies when the swap button is clicked
+        binding.btnSwap.setOnClickListener {
             reverseCurrency()
         }
 
+        // Navigate to the Travel Estimator screen
         binding.btnTravelEstimator.setOnClickListener {
             val intent = Intent(this, TravelEstimatorListActivity::class.java)
             startActivity(intent)
         }
 
-        textChangeListener()
-        spinnerListener()
-
-
-    }
-
-    private fun textChangeListener(){
+        // Add a text change listener to update conversion dynamically
         binding.tietBase.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // No action needed here
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -84,38 +91,34 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // No action needed here
             }
         })
-    }
 
-    private fun spinnerListener(){
+        // Add listeners for currency dropdown selections
         val sharedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 handleConversion()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Optional: Do nothing
+                // No action needed
             }
         }
-
         binding.spBase.onItemSelectedListener = sharedListener
         binding.spTarget.onItemSelectedListener = sharedListener
     }
 
-    private fun reverseCurrency(){
-        val targetCurrency = binding.spBase.selectedItem.toString()
-        val resultCurrency = binding.spTarget.selectedItem.toString()
+    private fun reverseCurrency() {
+        val baseCurrency = binding.spBase.selectedItem.toString()
+        val targetCurrency = binding.spTarget.selectedItem.toString()
 
-        // Find the positions of these items in their respective arrays
-        val targetPosition = (binding.spBase.adapter as ArrayAdapter<String>).getPosition(resultCurrency)
-        val resultPosition = (binding.spTarget.adapter as ArrayAdapter<String>).getPosition(targetCurrency)
+        val basePosition = (binding.spTarget.adapter as ArrayAdapter<String>).getPosition(baseCurrency)
+        val targetPosition = (binding.spBase.adapter as ArrayAdapter<String>).getPosition(targetCurrency)
 
         binding.spBase.setSelection(targetPosition)
-        binding.spTarget.setSelection(resultPosition)
+        binding.spTarget.setSelection(basePosition)
 
-        handleConversion()
+        handleConversion() // Trigger conversion after swapping
     }
 
     private fun handleConversion() {
@@ -137,12 +140,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun showErrorPopup(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).apply {
-            setGravity(Gravity.TOP, 0, 50) // Set Toast to appear at the top
+            setGravity(Gravity.TOP, 0, 50)
             show()
         }
     }
 
-
+    // Hide the keyboard when the user taps outside of an EditText field
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             val v = currentFocus
@@ -153,12 +156,10 @@ class MainActivity : AppCompatActivity() {
                     v.clearFocus()
                     val imm: InputMethodManager =
                         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
                 }
             }
         }
         return super.dispatchTouchEvent(event)
     }
-
 }
-

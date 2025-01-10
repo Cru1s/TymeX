@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.currencyconverter.data.CurrencyRepository
 
-class TravelEstimatorViewModelFactory(
-    private val repository: CurrencyRepository
-) : ViewModelProvider.Factory {
+// Factory to create instances of TravelEstimatorViewModel
+class TravelEstimatorViewModelFactory(private val repository: CurrencyRepository) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        // Check if the ViewModel class is TravelEstimatorViewModel
         if (modelClass.isAssignableFrom(TravelEstimatorViewModel::class.java)) {
             return TravelEstimatorViewModel(repository) as T
         }

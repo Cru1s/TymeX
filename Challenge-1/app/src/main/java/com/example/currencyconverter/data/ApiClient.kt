@@ -11,10 +11,12 @@ object ApiClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    // Log the network request and response
     private val httpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .build()
 
+    // Create an instance of CurrencyApi
     val api: CurrencyApi by lazy {
         Retrofit.Builder()
             .baseUrl("https://hexarate.paikama.co/") // Hexarate base URL
