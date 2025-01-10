@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyconverter.data.CurrencyRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class CurrencyViewModel (private val repository: CurrencyRepository) : ViewModel(){
 
@@ -16,18 +17,24 @@ class CurrencyViewModel (private val repository: CurrencyRepository) : ViewModel
         viewModelScope.launch {
             val result = repository.getExchangeRate(base, target)
             if(result.isSuccess){
-                val rate = result.getOrDefault(0.0)
-                if (rate != 0.0) {
+                val rate = result.getOrNull()
+                if (rate != null) {
                     val convertedAmount = String.format("%.5f", amount * rate)
                     conversionResult.postValue(convertedAmount)
-                    Log.d("CurrencyViewModel", "Success: Rate = $rate, Converted Amount = $convertedAmount")
-                } else {
-                    errorMessage.postValue("Unsupported currency")
                 }
             } else {
-                val error = result.exceptionOrNull()?.message ?: "Unknown error occurred"
-                errorMessage.postValue(error)
-                Log.e("CurrencyViewModel", "${result.exceptionOrNull()?.message}")
+                if (result.exceptionOrNull() is HttpException) {
+                    val code = (result.exceptionOrNull() as HttpException).code()
+                    if (code == 422) {
+                        errorMessage.postValue("Unsupported currency")
+                    } else {
+                        errorMessage.postValue("An error occurred")
+                    }
+                } else {
+                    Log.e("CurrencyViewModel", "An error occurred", result.exceptionOrNull())
+                    val error = result.exceptionOrNull()?.message ?: "Unknown error occurred"
+                    errorMessage.postValue(error)
+                }
             }
         }
     }

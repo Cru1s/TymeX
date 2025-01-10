@@ -1,7 +1,7 @@
 package com.example.currencyconverter
 
-import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.Editable
@@ -10,10 +10,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.FrameLayout
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.currencyconverter.data.ApiClient
@@ -21,7 +18,6 @@ import com.example.currencyconverter.data.CurrencyRepository
 import com.example.currencyconverter.databinding.ActivityMainBinding
 import com.example.currencyconverter.viewmodel.CurrencyViewModel
 import com.example.currencyconverter.viewmodel.CurrencyViewModelFactory
-import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         CurrencyViewModelFactory(CurrencyRepository(ApiClient.api))
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -40,24 +35,24 @@ class MainActivity : AppCompatActivity() {
         val currencies = resources.getStringArray(R.array.currencies)
         val currencies2 = resources.getStringArray(R.array.currencies2)
 
-        val adapterTarget = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies)
+        val adapterBase = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies)
+        adapterBase.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        val adapterTarget = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies2)
         adapterTarget.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        val adapterResult = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencies2)
-        adapterResult.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
+        binding.spBase.adapter = adapterBase
         binding.spTarget.adapter = adapterTarget
-        binding.spResult.adapter = adapterResult
 
         viewModel.conversionResult.observe(this){ result ->
-            binding.tietResult.setText(result)
+            binding.tietTarget.setText(result)
         }
 
         viewModel.errorMessage.observe(this){ error ->
             showErrorPopup(error)
         }
 
-        binding.tietTarget.setOnFocusChangeListener{ _, hasFocus ->
+        binding.tietBase.setOnFocusChangeListener{ _, hasFocus ->
             if (!hasFocus) {
                 handleConversion()
             }
@@ -67,6 +62,11 @@ class MainActivity : AppCompatActivity() {
             reverseCurrency()
         }
 
+        binding.btnTravelEstimator.setOnClickListener {
+            val intent = Intent(this, TravelEstimatorListActivity::class.java)
+            startActivity(intent)
+        }
+
         textChangeListener()
         spinnerListener()
 
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun textChangeListener(){
-        binding.tietTarget.addTextChangedListener(object : TextWatcher {
+        binding.tietBase.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // No action needed here
             }
@@ -100,28 +100,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.spBase.onItemSelectedListener = sharedListener
         binding.spTarget.onItemSelectedListener = sharedListener
-        binding.spResult.onItemSelectedListener = sharedListener
     }
 
     private fun reverseCurrency(){
-        val targetCurrency = binding.spTarget.selectedItem.toString()
-        val resultCurrency = binding.spResult.selectedItem.toString()
+        val targetCurrency = binding.spBase.selectedItem.toString()
+        val resultCurrency = binding.spTarget.selectedItem.toString()
 
         // Find the positions of these items in their respective arrays
-        val targetPosition = (binding.spTarget.adapter as ArrayAdapter<String>).getPosition(resultCurrency)
-        val resultPosition = (binding.spResult.adapter as ArrayAdapter<String>).getPosition(targetCurrency)
+        val targetPosition = (binding.spBase.adapter as ArrayAdapter<String>).getPosition(resultCurrency)
+        val resultPosition = (binding.spTarget.adapter as ArrayAdapter<String>).getPosition(targetCurrency)
 
-        binding.spTarget.setSelection(targetPosition)
-        binding.spResult.setSelection(resultPosition)
+        binding.spBase.setSelection(targetPosition)
+        binding.spTarget.setSelection(resultPosition)
 
         handleConversion()
     }
 
     private fun handleConversion() {
-        val amountText = binding.tietTarget.text.toString()
-        val fromCurrency = binding.spTarget.selectedItem.toString()
-        val toCurrency = binding.spResult.selectedItem.toString()
+        val amountText = binding.tietBase.text.toString()
+        val fromCurrency = binding.spBase.selectedItem.toString()
+        val toCurrency = binding.spTarget.selectedItem.toString()
 
         if (amountText.isNotEmpty()) {
             val amount = amountText.toDoubleOrNull()
@@ -131,19 +131,17 @@ class MainActivity : AppCompatActivity() {
                 showErrorPopup("Invalid amount")
             }
         } else {
-            binding.tietResult.setText("")
+            binding.tietTarget.setText("")
         }
     }
 
     private fun showErrorPopup(message: String) {
-        val snack: Snackbar = Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-        val view = snack.view
-        val params = view.layoutParams as FrameLayout.LayoutParams
-        params.gravity = Gravity.TOP
-        view.layoutParams = params
-        snack.animationMode = Snackbar.ANIMATION_MODE_FADE
-        snack.show()
+        Toast.makeText(this, message, Toast.LENGTH_LONG).apply {
+            setGravity(Gravity.TOP, 0, 50) // Set Toast to appear at the top
+            show()
+        }
     }
+
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {

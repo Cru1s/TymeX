@@ -40,12 +40,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        app:layout_constraintEnd_toStartOf="@+id/spTarget"
+        app:layout_constraintEnd_toStartOf="@+id/sp_base"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="@+id/guideline">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tietTarget"
+            android:id="@+id/tiet_base"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="Amount"
@@ -60,13 +60,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toStartOf="@+id/spResult"
+        app:layout_constraintEnd_toStartOf="@+id/sp_target"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/tilTarget">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tietResult"
+            android:id="@+id/tiet_target"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="false"
@@ -76,7 +76,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Spinner
-        android:id="@+id/spTarget"
+        android:id="@+id/sp_base"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/currencies"
@@ -86,14 +86,14 @@
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <Spinner
-        android:id="@+id/spResult"
+        android:id="@+id/sp_target"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
         android:entries="@array/currencies2"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spTarget" />
+        app:layout_constraintTop_toBottomOf="@+id/sp_base" />
 
     <Button
         android:id="@+id/btnSwap"
@@ -101,8 +101,19 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Swap"
-        app:layout_constraintBottom_toTopOf="@+id/spResult"
+        app:layout_constraintBottom_toTopOf="@+id/sp_target"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spTarget" />
+        app:layout_constraintTop_toBottomOf="@+id/sp_base" />
+
+    <Button
+        android:id="@+id/btnTravelEstimator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:text="Travel Estimator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tilResult" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
