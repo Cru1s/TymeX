@@ -3,20 +3,6 @@
 This is a simple currency converter application that allows users to convert currencies, manage travel budgets, and estimate travel costs.
 
 ---
-
-## Prerequisites
-
-Before building and running the app, ensure you have the following installed:
-
-- **Android Studio**: Version `2021.2.1 (Chipmunk)` or higher.
-- **JDK**: Java Development Kit version `8` or higher.
-- **Kotlin**: Version `1.6.10` (integrated with Android Studio).
-- **Android SDK**:
-  - **Target SDK**: `32`
-  - **Minimum SDK**: `21`
-
----
-
 ## App Structure
 
 The app follows the MVVM (Model-View-ViewModel) architecture:
@@ -38,7 +24,21 @@ TravelEstimatorViewModel ( adding, deleting, and currency conversion for total t
   - MainActivity: UI for selecting base/target currencies and displaying converted amounts.
   - TravelEstimatorListActivity: Displays a list of travel estimators and allows adding/deleting estimators.
   - TravelEstimatorAdapter: Displays estimator details in a RecyclerView.
-    
+---
+
+## Prerequisites
+
+Before building and running the app, ensure you have the following installed:
+
+- **Android Studio**: Version `2021.2.1 (Chipmunk)` or higher.
+- **JDK**: Java Development Kit version `8` or higher.
+- **Kotlin**: Version `1.6.10` (integrated with Android Studio).
+- **Android SDK**:
+  - **Target SDK**: `32`
+  - **Minimum SDK**: `21`
+
+---
+
 ## Steps to Build and Run
 
 ### 1. Download the .zip file 
