@@ -1,6 +1,6 @@
 # Currency Converter App
 
-This is a simple currency converter application that allows users to convert currencies, manage travel budgets, and estimate travel costs.
+This is a simple currency converter application that allows users to convert currencies, manage travel budgets, and estimate travel costs. Fetching live API from https://hexarate.paikama.co
 
 ---
 ## App Structure
