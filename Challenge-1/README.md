@@ -61,3 +61,6 @@ Ensure the following configurations are correct:
 
 - Connect to a physical Android device through USB or use Android Emulator (with API 21 or higher)
 - Press Run (green play button) or use the shortcut Shift + F10.
+
+### 5. Demo Video 
+- Link: https://drive.google.com/file/d/17LdMaV8k4b_NP8243STVutOmpMnzFrM7/view?usp=sharing
